@@ -25,8 +25,11 @@ library(dplyr)
 total_steps <- summarize(group_by(data, date), steps=sum(steps, na.rm=TRUE))
 
 head(total_steps)
-```
 
+hist(total_steps$steps, 
+     main = "Histogram of the total number of steps taken each day", 
+     xlab = "Total number of steps", col="blue", nclass=20)
+```
 
 2. Mean and median of the total number of steps taken per day
 
@@ -36,7 +39,8 @@ median(total_steps$steps)
 ```
 
 
-3. Histogram of the total number of steps taken each day with filled data set
+3. Histogram of the total number of steps taken each day with mean and median 
+reported
 ```{r, echo=TRUE}
 hist(total_steps$steps, 
      main = "Histogram of the total number of steps taken each day", 
@@ -103,6 +107,10 @@ head(filled_data)
 library(dplyr)
 filled_total_steps <- summarize(group_by(filled_data, date), 
                                 steps=sum(steps, na.rm=TRUE))
+
+hist(filled_total_steps$steps, 
+     main = "Histogram of the total number of steps taken each day", 
+     xlab = "Total number of steps", col="blue", nclass=20)
 ```
 
 * Mean and median of the total number of steps taken per day

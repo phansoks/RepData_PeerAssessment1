@@ -36,6 +36,13 @@ head(total_steps)
 ## 6 2012-10-06 15420
 ```
 
+```r
+hist(total_steps$steps, 
+     main = "Histogram of the total number of steps taken each day", 
+     xlab = "Total number of steps", col="blue", nclass=20)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 2. Mean and median of the total number of steps taken per day
 
@@ -57,7 +64,8 @@ median(total_steps$steps)
 ```
 
 
-3. Histogram of the total number of steps taken each day with filled data set
+3. Histogram of the total number of steps taken each day with mean and median 
+reported
 
 ```r
 hist(total_steps$steps, 
@@ -153,7 +161,13 @@ head(filled_data)
 library(dplyr)
 filled_total_steps <- summarize(group_by(filled_data, date), 
                                 steps=sum(steps, na.rm=TRUE))
+
+hist(filled_total_steps$steps, 
+     main = "Histogram of the total number of steps taken each day", 
+     xlab = "Total number of steps", col="blue", nclass=20)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
 
 * Mean and median of the total number of steps taken per day
 
@@ -254,4 +268,21 @@ filled_data[2000,]
 ##      steps       date interval day_type
 ## 2000     0 2012-10-07     2235  weekend
 ```
-2.
+2. Panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days
+
+
+```r
+library(dplyr)
+library(lattice)
+avg_interval_steps <- summarize(group_by(filled_data, interval, day_type), 
+                                steps=mean(steps, na.rm=TRUE))
+
+xyplot(steps~interval | day_type, 
+       avg_interval_steps, type="l", 
+       xlab="Interval", 
+       ylab="Number of steps", 
+       layout = c(1, 2),
+       as.table = TRUE)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
