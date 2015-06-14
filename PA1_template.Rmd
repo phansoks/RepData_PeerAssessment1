@@ -23,25 +23,20 @@ data$date <- as.Date(data$date, "%Y-%m-%d")
 ```{r, echo=TRUE, message=FALSE}
 library(dplyr)
 total_steps <- summarize(group_by(data, date), steps=sum(steps, na.rm=TRUE))
+
+head(total_steps)
 ```
 
 
+2. Mean and median of the total number of steps taken per day
 
-2. Histogram of the total number of steps taken each day
-```{r, echo=TRUE}
-hist(total_steps$steps, main = "Histogram of the total number of steps taken each day", xlab = "Total number of steps", col="blue", nclass=20)
-```
-
-3. Mean and median of the total number of steps taken per day
-
-3.1 Compute mean and median
 ```{r, echo=TRUE}
 mean(total_steps$steps)
 median(total_steps$steps)
 ```
 
 
-3.2 Report mean and median
+3. Histogram of the total number of steps taken each day with filled data set
 ```{r, echo=TRUE}
 hist(total_steps$steps, 
      main = "Histogram of the total number of steps taken each day", 
@@ -96,13 +91,77 @@ for( i in 1:nrow(filled_data)) {
     }        
 }
 
+
+head(filled_data)
 ```
 
 
-4. Make a histogram of the total number of steps taken each day and Calculate 
-and report the mean and median total number of steps taken per day. Do these 
-values differ from the estimates from the first part of the assignment? What is 
-the impact of imputing missing data on the estimates of the total daily number 
-of steps?
+4. Histogram of the total number of steps taken each day with filled data set
+
+* Total number of steps taken per day
+```{r, echo=TRUE, message=FALSE}
+library(dplyr)
+filled_total_steps <- summarize(group_by(filled_data, date), 
+                                steps=sum(steps, na.rm=TRUE))
+```
+
+* Mean and median of the total number of steps taken per day
+
+```{r, echo=TRUE}
+mean(filled_total_steps$steps)
+median(filled_total_steps$steps)
+```
+
+```{r, echo=TRUE}
+hist(filled_total_steps$steps, 
+     main = "Histogram of the total number of steps taken each day", 
+     xlab = "Total number of steps", col="blue", nclass=20)
+abline(v=mean(filled_total_steps$steps), col="red", lwd=4)
+abline(v=median(filled_total_steps$steps), col="green", lwd=2)
+legend("topright", lwd=c(2,2),col = c("red", "green"), 
+       legend = c("mean","median"))
+```
+
+* Do these values differ from the estimates from the first part of the assignment? 
+What is the impact of imputing missing data on the estimates of the total daily 
+number of steps?
+
+We can see that the frequency of very low values of daily total number of steps 
+decreased a lot because missing values were filled.
+
+Besides, frequency of average values of daily total number of steps increased as 
+we choose to use the mean of 5-minute interval to fill the missing values. This
+also explains why mean and median are now equal.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+1.New factor variable in the dataset with two levels indicating whether a given 
+date is a weekday or weekend day
+
+```{r, echo=TRUE}
+library(dplyr)
+Sys.setenv("LANGUAGE"="EN")
+Sys.setlocale("LC_TIME", "English")
+filled_data <- mutate(filled_data, day_type = factor(weekdays(date) %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"), levels=c(FALSE, TRUE), labels = c("weekend","weekday")))
+
+#Quick check
+head(filled_data)
+weekdays(filled_data[1,2])
+weekdays(filled_data[2000,2])
+filled_data[2000,]
+```
+2. Panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days
+
+```{r, echo=TRUE}
+library(dplyr)
+library(lattice)
+avg_interval_steps <- summarize(group_by(filled_data, interval, day_type), 
+                                steps=mean(steps, na.rm=TRUE))
+
+xyplot(steps~interval | day_type, 
+       avg_interval_steps, type="l", 
+       xlab="Interval", 
+       ylab="Number of steps", 
+       layout = c(1, 2),
+       as.table = TRUE)
+
+```
